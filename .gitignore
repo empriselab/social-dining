@@ -8,3 +8,13 @@ data/
 # Jupyter Notebook checkpoints
 ##############################
 **/.ipynb_checkpoints/
+
+
+**/wandb/
+**/slurm_outs
+**/checkpoints
+
+**/__pycache__
+
+src/preprocessing/samples.npy
+src/preprocessing/all_samples.npy

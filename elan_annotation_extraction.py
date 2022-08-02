@@ -25,9 +25,9 @@ eaf_tier_names = [
 	'disruption'
 ]
 
-annotations_folder = f'/home/janko/projects/social-dining/data/annotation/annotation_files'
+annotations_folder = f'/home/aa2375/social-dining/data/annotation/annotation-files'
 annotation_files = sorted(glob.glob(f'{annotations_folder}/*.eaf'))
-
+print(annotation_files)
 # For all annotation files
 for i in range(len(annotation_files)):
 

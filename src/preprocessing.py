@@ -38,8 +38,7 @@ def get_openpose_from_json(video_id, start_frame, window_size):
     :param window_size: the window size of each sample in seconds
     """
 
-    path = '/mnt/data1/Tong/rf_op/json/' + str(video_id) + '.mp4'
-    #path = '/Users/tongwu/Downloads/' + video_id  + '.mp4'
+    path = '/home/aa2375/social-dining/data/openpose/' + str(video_id)
     frame_list = os.listdir(path)
     frame_list.sort()
     print("len:", len(frame_list))
@@ -55,16 +54,10 @@ def get_openpose_from_json(video_id, start_frame, window_size):
         if not pose_frame['people']:  # if no body detected:
             body_joints = np.empty(25 * 3)
             body_joints[:] = np.nan
-            lhand_joints = np.empty(21 * 3)
-            lhand_joints[:] = np.nan
-            rhand_joints = np.empty(21 * 3)
-            rhand_joints[:] = np.nan
             face_joints = np.empty(70 * 3)
             face_joints[:] = np.nan
         else:
             body_joints = pose_frame['people'][0]['pose_keypoints_2d']
-            lhand_joints = pose_frame['people'][0]['hand_left_keypoints_2d']
-            rhand_joints = pose_frame['people'][0]['hand_right_keypoints_2d']
             face_joints = pose_frame['people'][0]['face_keypoints_2d']
 
         a = 0
@@ -72,18 +65,6 @@ def get_openpose_from_json(video_id, start_frame, window_size):
             b_x.append(body_joints[a])
             b_y.append(body_joints[a + 1])
             b_c.append(body_joints[a + 1])
-            a += 3
-        a = 0
-        while a < (len(lhand_joints)):
-            lh_x.append(lhand_joints[a])
-            lh_y.append(lhand_joints[a + 1])
-            lh_c.append(lhand_joints[a + 1])
-            a += 3
-        a = 0
-        while a < (len(rhand_joints)):
-            rh_x.append(rhand_joints[a])
-            rh_y.append(rhand_joints[a + 1])
-            rh_c.append(rhand_joints[a + 1])
             a += 3
         a = 0
         while a < (len(face_joints)):
@@ -101,20 +82,16 @@ def get_openpose_from_json(video_id, start_frame, window_size):
     body_op_y = np.delete(body_op_y, [10, 11, 13, 14, 18, 19, 20, 21, 22, 23, 24], 1)
     body_op_c = np.delete(body_op_c, [10, 11, 13, 14, 18, 19, 20, 21, 22, 23, 24], 1)
 
-    lhand_op_x = np.array(lh_x).reshape(window_size * 30, -1)
-    lhand_op_y = np.array(lh_y).reshape(window_size * 30, -1)
-    lhand_op_c = np.array(lh_c).reshape(window_size * 30, -1)
-    rhand_op_x = np.array(rh_x).reshape(window_size * 30, -1)
-    rhand_op_y = np.array(rh_y).reshape(window_size * 30, -1)
-    rhand_op_c = np.array(rh_c).reshape(window_size * 30, -1)
+
     face_op_x = np.array(f_x).reshape(window_size * 30, -1)
     face_op_y = np.array(f_y).reshape(window_size * 30, -1)
     face_op_c = np.array(f_c).reshape(window_size * 30, -1)
-    sample = np.concatenate((np.concatenate((np.concatenate((np.concatenate((np.concatenate(
-        (np.concatenate((np.concatenate((body_op_x, body_op_y), axis=1), lhand_op_x), axis=1), lhand_op_y),
-        axis=1), rhand_op_x), axis=1), rhand_op_y), axis=1), face_op_x), axis=1), face_op_y), axis=1)
-    #np.save('data/openpose_6s_sonny.npy', np.array(sample_list).astype(float))
-    return np.array(sample).astype(float)
+    # sample = np.concatenate((np.concatenate((np.concatenate((np.concatenate((np.concatenate(
+    #     (np.concatenate((np.concatenate((body_op_x, body_op_y), axis=1), lhand_op_x), axis=1), lhand_op_y),
+    #     axis=1), rhand_op_x), axis=1), rhand_op_y), axis=1), face_op_x), axis=1), face_op_y), axis=1)
+    body_sample = np.concatenate([body_op_x, body_op_y], axis=1)
+    face_sample = np.concatenate([face_op_x, face_op_y], axis=1)
+    return np.array(body_sample).astype(float), np.array(face_sample).astype(float)
 
 
 def mapping_op_sample_to_elan_label_positives():
@@ -288,13 +265,6 @@ def get_nonintension_samples():
     df_new = pd.DataFrame({"video_id_main": ss, "start_frame":ll})
     print()
     df_new.to_csv("data/elan_labels_fl_negatives.csv")
-
-
-
-
-
-concatenate_op()
-print()
 
 
 
